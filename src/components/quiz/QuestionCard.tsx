@@ -1,7 +1,6 @@
 // src/components/quiz/QuestionCard.tsx
 'use client';
-// @ts-expect-error - experimental_useEffectEvent is not in @types/react by default
-import { useEffect, experimental_useEffectEvent as useEffectEvent } from 'react';
+import { useEffect, useRef } from 'react';
 import { m } from 'framer-motion';
 import { QuizQuestion, QuizOption } from './questions';
 
@@ -20,7 +19,8 @@ export default function QuestionCard({
   selectedOptionValue,
   onSelect
 }: QuestionCardProps) {
-  const onSelectEvent = useEffectEvent(onSelect);
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
 
   // Listen for keyboard number shortcuts (1-6) to make selections
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function QuestionCard({
       if (!isNaN(num) && num >= 1 && num <= question.options.length) {
         const option = question.options[num - 1];
         if (option) {
-          onSelectEvent(option);
+          onSelectRef.current(option);
         }
       }
     };
