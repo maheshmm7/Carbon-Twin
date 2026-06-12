@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: hsl(220, 20%, 7%);
+  --bg-surface: hsl(220, 18%, 12%);
+  --bg-glass: hsla(220, 18%, 15%, 0.6);
+  --accent-green: hsl(140, 70%, 45%);
+  --accent-emerald: hsl(165, 65%, 45%);
+  --accent-sapphire: hsl(220, 80%, 55%);
+  --accent-amber: hsl(35, 90%, 55%);
+  --accent-crimson: hsl(0, 72%, 55%);
+  --text-primary: hsl(0, 0%, 95%);
+  --text-secondary: hsl(0, 0%, 65%);
+  --border-glass: hsla(0, 0%, 100%, 0.08);
+
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-glass: var(--bg-glass);
+  --color-accent-green: var(--accent-green);
+  --color-accent-emerald: var(--accent-emerald);
+  --color-accent-sapphire: var(--accent-sapphire);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-crimson: var(--accent-crimson);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-glass: var(--border-glass);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: "Inter", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+}
+
+.gradient-green { background: linear-gradient(135deg, hsl(140, 70%, 45%), hsl(160, 80%, 55%)); }
+.gradient-emerald { background: linear-gradient(135deg, hsl(155, 65%, 40%), hsl(175, 70%, 50%)); }
+.gradient-sapphire { background: linear-gradient(135deg, hsl(210, 80%, 50%), hsl(230, 70%, 60%)); }
+.gradient-amber { background: linear-gradient(135deg, hsl(35, 90%, 55%), hsl(20, 85%, 50%)); }
+.gradient-crimson { background: linear-gradient(135deg, hsl(0, 72%, 55%), hsl(350, 80%, 45%)); }
+
+.bg-mesh {
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(210, 80%, 55%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(140, 70%, 45%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, hsla(230, 70%, 60%, 0.1) 0px, transparent 50%);
 }
