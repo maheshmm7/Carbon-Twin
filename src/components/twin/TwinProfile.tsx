@@ -61,7 +61,7 @@ export default function TwinProfile() {
           <div className="mb-6 relative">
             <AuraOrb aura={currentAura} size="lg" />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="text-4xl" role="img" aria-label={currentAura}>
+              <span className="text-4xl" aria-hidden="true">
                 {auraDef.emoji}
               </span>
             </div>
@@ -260,7 +260,7 @@ function BaselineRow({ question, currentOption, onUpdate }: {
         className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <span className="text-xl shrink-0" role="img" aria-hidden="true">
+          <span className="text-xl shrink-0" aria-hidden="true">
             {currentOption?.icon || '❓'}
           </span>
           <div className="min-w-0">

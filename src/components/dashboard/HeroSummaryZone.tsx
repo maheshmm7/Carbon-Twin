@@ -42,7 +42,7 @@ export default function HeroSummaryZone() {
           <div className="relative shrink-0">
             <AuraOrb aura={currentAura} size="md" />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="text-3xl" role="img" aria-label={currentAura}>
+              <span className="text-3xl" aria-hidden="true">
                 {auraDef.emoji}
               </span>
             </div>

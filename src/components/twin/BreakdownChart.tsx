@@ -1,6 +1,5 @@
 // src/components/twin/BreakdownChart.tsx
 'use client';
-// @ts-expect-error - require is allowed in client side bundle
 const { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } = require('recharts');
 
 interface BreakdownEntry {

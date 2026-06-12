@@ -78,14 +78,11 @@ export default function PurificationQuests() {
               rotate: 360
             }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="fixed w-2 h-2 rounded-full pointer-events-none"
             style={{ 
-              position: 'fixed',
               left: `${p.originX}px`,
               top: `${p.originY}px`,
               backgroundColor: p.color,
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
               boxShadow: `0 0 10px ${p.color}`
             }}
           />
@@ -134,7 +131,7 @@ export default function PurificationQuests() {
                     : 'bg-white/5 border-white/5 hover:bg-white/10'
                 }`}
               >
-                <div className="text-3xl p-2 rounded-xl bg-white/5 shrink-0" role="img" aria-hidden="true">
+                <div className="text-3xl p-2 rounded-xl bg-white/5 shrink-0" aria-hidden="true">
                   {quest.icon}
                 </div>
 

@@ -83,7 +83,7 @@ export default function LifeReplay() {
                 className="glass-card p-5 flex flex-col gap-3 relative overflow-hidden group hover:border-white/15 transition-colors"
               >
                 {/* Floating Chapter Icon */}
-                <div className="text-3xl" role="img" aria-label={chapter.title}>
+                <div className="text-3xl" aria-hidden="true">
                   {chapter.icon}
                 </div>
 

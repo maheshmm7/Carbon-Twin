@@ -1,6 +1,5 @@
 // src/components/timeline/TimelineChart.tsx
 'use client';
-// @ts-expect-error - require is allowed in client side bundle
 const { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, Legend } = require('recharts');
 
 interface ChartDataEntry {

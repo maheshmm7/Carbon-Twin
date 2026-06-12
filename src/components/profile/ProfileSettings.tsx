@@ -85,7 +85,7 @@ export default function ProfileSettings() {
                           : 'rgba(255,255,255,0.02)'
                       }}
                     >
-                      <span className="text-2xl mt-0.5 shrink-0" role="img" aria-hidden="true">
+                      <span className="text-2xl mt-0.5 shrink-0" aria-hidden="true">
                         {option.icon}
                       </span>
                       

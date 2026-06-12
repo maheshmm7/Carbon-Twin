@@ -78,7 +78,7 @@ export default function ShiftSimulator() {
                         : 'bg-white/5 border-white/5 hover:bg-white/10'
                     }`}
                   >
-                    <span className="text-2xl mt-1 shrink-0" role="img" aria-hidden="true">
+                    <span className="text-2xl mt-1 shrink-0" aria-hidden="true">
                       {shift.icon}
                     </span>
                     
@@ -130,7 +130,7 @@ export default function ShiftSimulator() {
             <div className="my-6 relative">
               <AuraOrb aura={simulator.simulatedAura} size="md" />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="text-3xl" role="img" aria-label={simulator.simulatedAura}>
+                <span className="text-3xl" aria-hidden="true">
                   {activeAuraDef.emoji}
                 </span>
               </div>
