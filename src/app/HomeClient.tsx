@@ -24,6 +24,7 @@ import ShareCard from '@/components/share/ShareCard';
 export default function HomeClient() {
   const phase = useCarbonStore((state) => state.phase);
   const reset = useCarbonStore((state) => state.reset);
+  const setPhase = useCarbonStore((state) => state.setPhase);
   const [activeTab, setActiveTab] = useState<'overview' | 'sandbox' | 'coach' | 'impacts' | 'share' | 'profile'>('overview');
   const [mounted, setMounted] = useState(false);
 
@@ -162,11 +163,19 @@ export default function HomeClient() {
                     </div>
 
                     {/* Bottom Actions */}
-                    <div className="pt-6 border-t border-white/5">
+                    <div className="pt-6 border-t border-white/5 space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => setPhase('landing')}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold transition-all cursor-pointer"
+                      >
+                        <Globe className="w-3.5 h-3.5" />
+                        View Info & Science
+                      </button>
                       <button
                         type="button"
                         onClick={reset}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold transition-all cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-500/10 hover:border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-400 text-xs font-bold transition-all cursor-pointer"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                         Restart Journey
@@ -181,13 +190,22 @@ export default function HomeClient() {
                       <span className="text-lg font-bold bg-gradient-to-r from-green-400 to-indigo-400 bg-clip-text text-transparent">
                         Carbon Twin AI™
                       </span>
-                      <button
-                        type="button"
-                        onClick={reset}
-                        className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-[10px] font-bold transition-all cursor-pointer"
-                      >
-                        Restart
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPhase('landing')}
+                          className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-[10px] font-bold transition-all cursor-pointer"
+                        >
+                          Info
+                        </button>
+                        <button
+                          type="button"
+                          onClick={reset}
+                          className="px-3 py-1.5 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 text-[10px] font-bold transition-all cursor-pointer"
+                        >
+                          Restart
+                        </button>
+                      </div>
                     </header>
 
                     {/* Mobile tabs row */}

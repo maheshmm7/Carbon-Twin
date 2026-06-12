@@ -76,6 +76,7 @@ const PRINCIPLES = [
 
 export default function Hero() {
   const setPhase = useCarbonStore((state) => state.setPhase);
+  const twin = useCarbonStore((state) => state.twin);
 
   return (
     <div className="w-full flex flex-col items-center bg-mesh">
@@ -95,10 +96,10 @@ export default function Hero() {
         </nav>
         <button
           type="button"
-          onClick={() => setPhase('quiz')}
+          onClick={() => setPhase(twin ? 'results' : 'quiz')}
           className="px-4 py-2 rounded-xl bg-white/5 text-white hover:bg-white/10 text-xs font-bold transition-all border border-white/5 cursor-pointer"
         >
-          Launch Twin
+          {twin ? 'Go to Dashboard' : 'Launch Twin'}
         </button>
       </header>
 
@@ -133,16 +134,34 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay: 0.4 }}
-            className="flex flex-col gap-4 items-center mt-4"
+            className="flex flex-col gap-4 items-center mt-4 w-full"
           >
-            {/* Main CTA */}
-            <button
-              type="button"
-              onClick={() => setPhase('quiz')}
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-accent-green to-accent-sapphire hover:brightness-110 text-white font-semibold text-lg cursor-pointer outline-none focus:ring-2 focus:ring-accent-sapphire active:scale-98 transition-all shadow-[0_0_20px_rgba(34,197,94,0.25)] border border-white/10"
-            >
-              Begin Your Journey
-            </button>
+            {twin ? (
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full">
+                <button
+                  type="button"
+                  onClick={() => setPhase('results')}
+                  className="px-8 py-4 rounded-xl bg-gradient-to-r from-accent-green to-accent-sapphire hover:brightness-110 text-white font-semibold text-lg cursor-pointer outline-none focus:ring-2 focus:ring-accent-sapphire active:scale-98 transition-all shadow-[0_0_20px_rgba(34,197,94,0.25)] border border-white/10"
+                >
+                  Return to Dashboard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPhase('quiz')}
+                  className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-base cursor-pointer outline-none border border-white/10"
+                >
+                  Retake Quiz
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setPhase('quiz')}
+                className="px-8 py-4 rounded-xl bg-gradient-to-r from-accent-green to-accent-sapphire hover:brightness-110 text-white font-semibold text-lg cursor-pointer outline-none focus:ring-2 focus:ring-accent-sapphire active:scale-98 transition-all shadow-[0_0_20px_rgba(34,197,94,0.25)] border border-white/10"
+              >
+                Begin Your Journey
+              </button>
+            )}
 
             {/* Demo Link for Judges */}
             <DemoModeToggle />
