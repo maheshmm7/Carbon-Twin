@@ -14,7 +14,7 @@ import { EMISSION_FACTORS, AURA_THRESHOLDS, CONSEQUENCE_CONSTANTS } from './cons
  * Financial proxy estimates (annual cost in USD) based on lifestyle habits.
  * Helps ground the "Green Future Comparison" in tangible financial metrics.
  */
-export const FINANCIAL_ESTIMATES = {
+const FINANCIAL_ESTIMATES = {
   transport: {
     car_petrol: 3200,      // Petrol, maintenance, insurance
     car_electric: 1600,    // Charging, lower maintenance

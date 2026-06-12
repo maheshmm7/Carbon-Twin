@@ -9,18 +9,18 @@ interface AuraOrbProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+const sizeClasses = {
+  sm: 'w-12 h-12 shadow-[0_0_20px_var(--glow)]',
+  md: 'w-32 h-32 shadow-[0_0_40px_var(--glow)]',
+  lg: 'w-48 h-48 shadow-[0_0_80px_var(--glow)]'
+};
+
 /**
  * Animated glowing orb component that themes itself to the assigned Carbon Aura.
  * Uses Framer Motion for smooth, hardware-accelerated breathing animations.
  */
 export default function AuraOrb({ aura, size = 'md' }: AuraOrbProps) {
   const definition = getAuraDefinition(aura);
-
-  const sizeClasses = {
-    sm: 'w-12 h-12 shadow-[0_0_20px_var(--glow)]',
-    md: 'w-32 h-32 shadow-[0_0_40px_var(--glow)]',
-    lg: 'w-48 h-48 shadow-[0_0_80px_var(--glow)]'
-  };
 
   // Extract HSL values for the shadow styling
   const glowStyle = {

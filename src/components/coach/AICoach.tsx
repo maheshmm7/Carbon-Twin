@@ -5,6 +5,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCarbonStore } from '@/store/carbon-store';
 import { Send, Sparkles, MessageCircle } from 'lucide-react';
 
+const presets = [
+  'How do I improve my Aura?',
+  'Explain my travel carbon cost.',
+  'Quickest way to save 1 tonne.',
+  'Give me green diet tips.'
+];
 
 export default function AICoach() {
   const twin = useCarbonStore((state) => state.twin);
@@ -55,12 +61,7 @@ export default function AICoach() {
     }
   };
 
-  const presets = [
-    'How do I improve my Aura?',
-    'Explain my travel carbon cost.',
-    'Quickest way to save 1 tonne.',
-    'Give me green diet tips.'
-  ];
+
 
   return (
     <div 
@@ -125,9 +126,9 @@ export default function AICoach() {
                       <Sparkles className="w-2.5 h-2.5" /> Coach
                     </div>
                     <div className="flex gap-1.5 items-center py-1">
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-smooth-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-smooth-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-indigo-400 animate-smooth-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
                 </div>
@@ -143,6 +144,7 @@ export default function AICoach() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask how to reduce carbon footprints..."
+                aria-label="Ask how to reduce carbon footprints..."
                 disabled={isSending}
                 className="flex-1 bg-black/40 border border-white/5 rounded-xl px-4 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50 placeholder-neutral-500 disabled:opacity-50"
               />
@@ -177,7 +179,7 @@ export default function AICoach() {
               </div>
             </div>
 
-            <div className="mt-6 p-4 rounded-xl bg-indigo-950/10 border border-indigo-950/20 text-[11px] text-neutral-400 leading-relaxed">
+            <div className="mt-6 p-4 rounded-xl bg-indigo-950/10 border border-indigo-950/20 text-[11px] text-indigo-200 leading-relaxed">
               💡 <span className="font-semibold text-white">Pro Tip:</span> Ask about specific alternatives in your area, or ask how your simulator toggles can save you money.
             </div>
           </div>

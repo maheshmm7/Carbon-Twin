@@ -1,6 +1,4 @@
-// src/lib/prompts.ts
 
-export const TWIN_GENERATION_PROMPT_VERSION = 'v1.0';
 
 export const TWIN_GENERATION_SYSTEM_INSTRUCTION = `
 You are Carbon Twin AI, an environmental storyteller and sustainability advisor.

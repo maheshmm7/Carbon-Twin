@@ -1,7 +1,7 @@
 // src/lib/aura-definitions.ts
 import { AuraDefinition } from '@/types';
 
-export const AURA_DEFINITIONS: Record<string, AuraDefinition> = {
+const AURA_DEFINITIONS: Record<string, AuraDefinition> = {
   green: {
     id: 'green',
     name: 'Green Aura',

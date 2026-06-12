@@ -1,7 +1,7 @@
 // src/lib/validators.ts
 import { z } from 'zod';
 
-export const QuizAnswerSchema = z.object({
+const QuizAnswerSchema = z.object({
   questionId: z.string(),
   value: z.union([z.string(), z.number()]),
   category: z.enum(['transport', 'diet', 'energy', 'travel', 'consumption'])

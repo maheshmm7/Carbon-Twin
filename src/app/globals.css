@@ -65,3 +65,18 @@ body {
     radial-gradient(at 100% 0%, hsla(140, 70%, 45%, 0.15) 0px, transparent 50%),
     radial-gradient(at 50% 100%, hsla(230, 70%, 60%, 0.1) 0px, transparent 50%);
 }
+
+@keyframes custom-bounce-ease {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  50% {
+    transform: translateY(-6px);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.animate-smooth-bounce {
+  animation: custom-bounce-ease 1.2s infinite;
+}

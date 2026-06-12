@@ -232,20 +232,20 @@ export default function TwinProfile() {
   );
 }
 
+const cleanDefaults: Record<string, string> = {
+  transport: 'remote',
+  diet: 'vegan',
+  energy: 'shared_low',
+  travel: 'never',
+  consumption: 'minimalist'
+};
+
 function BaselineRow({ question, currentOption, onUpdate }: {
   question: QuizQuestion;
   currentOption: QuizOption | undefined;
   onUpdate: (val: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const cleanDefaults: Record<string, string> = {
-    transport: 'remote',
-    diet: 'vegan',
-    energy: 'shared_low',
-    travel: 'never',
-    consumption: 'minimalist'
-  };
 
   const handleReset = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -255,11 +255,13 @@ function BaselineRow({ question, currentOption, onUpdate }: {
 
   return (
     <div className="border border-white/5 rounded-2xl bg-white/[0.01] hover:bg-white/[0.02] transition-all overflow-hidden">
-      <div 
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none"
-      >
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="p-4 flex items-center justify-between gap-3 select-none">
+        <button 
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          className="flex-1 flex items-center gap-3 min-w-0 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500/30 rounded-xl p-1 -m-1"
+        >
           <span className="text-xl shrink-0" aria-hidden="true">
             {currentOption?.icon || '❓'}
           </span>
@@ -271,7 +273,7 @@ function BaselineRow({ question, currentOption, onUpdate }: {
               {currentOption?.label || 'Not answered'}
             </p>
           </div>
-        </div>
+        </button>
 
         <div className="flex items-center gap-2 shrink-0">
           {currentOption && currentOption.value !== cleanDefaults[question.category] && (
@@ -279,14 +281,16 @@ function BaselineRow({ question, currentOption, onUpdate }: {
               type="button"
               onClick={handleReset}
               title="Reset category to lowest footprint"
-              className="p-1.5 rounded-lg border border-white/5 bg-white/5 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 text-neutral-400 transition-all cursor-pointer"
+              className="p-1.5 rounded-lg border border-white/5 bg-white/5 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 text-white/60 transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-red-500/50"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
           <button
             type="button"
-            className={`p-1.5 rounded-lg border border-white/5 bg-white/5 text-neutral-400 hover:text-white transition-all cursor-pointer ${
+            onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+            className={`p-1.5 rounded-lg border border-white/5 bg-white/5 text-white/60 hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500/50 ${
               isOpen ? 'rotate-180 text-white bg-white/10' : ''
             }`}
           >

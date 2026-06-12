@@ -56,18 +56,7 @@ export const AURA_THRESHOLDS = {
   // Crimson is anything above 14.0
 } as const;
 
-/**
- * Regional benchmarks for comparison and dashboards (tonnes/year).
- */
-export const REGIONAL_BENCHMARKS = [
-  { name: 'Paris Target', value: 2.3, auraId: 'green' },
-  { name: 'India Avg', value: 1.9, auraId: 'green' },
-  { name: 'Global Avg', value: 4.7, auraId: 'emerald' },
-  { name: 'UK Avg', value: 5.2, auraId: 'sapphire' },
-  { name: 'EU Avg', value: 6.1, auraId: 'sapphire' },
-  { name: 'China Avg', value: 8.0, auraId: 'sapphire' },
-  { name: 'USA Avg', value: 14.7, auraId: 'crimson' }
-] as const;
+
 
 /**
  * Multipliers for environmental consequences (based on 10,000 population projection).
