@@ -15,7 +15,7 @@ We actively monitor and patch vulnerabilities in the following versions of Carbo
 
 We take the security of Carbon Twin AI™ seriously. If you find a security vulnerability, please do **not** open a public issue. Instead, report it responsibly by following these steps:
 
-1. **Email us**: Send a detailed security report to `security@carbontwin.ai` (or the maintainer's email listed in the repository profile).
+1. **Report Privately**: Please open a Private Vulnerability Report directly through the repository's "Security" tab on GitHub, or contact the repository owner (`maheshmm7`) through their GitHub profile contact details.
 2. **Details to include**:
    * Description of the vulnerability and its potential impact.
    * Step-by-step instructions (or a proof-of-concept script) to reproduce the vulnerability.
