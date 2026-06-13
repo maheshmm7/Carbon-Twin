@@ -1,7 +1,7 @@
 # Carbon Twin AI™ 🌍✨
 
 > **A Personalized Digital Twin Simulator & AI Carbon Coach**
-> Built for the PromptWars Challenge 3. Combines deterministic scientific math, real-time habit simulation, and context-aware generative AI into one seamless single-scroll experience.
+> Combines deterministic scientific math, real-time habit simulation, and context-aware generative AI into one seamless single-scroll experience.
 
 ---
 
@@ -12,16 +12,6 @@
 ### 🎯 Target Persona
 * **Primary**: Young professionals, students, and remote workers looking for rapid, visual feedback.
 * **Secondary**: Families and eco-conscious learners looking to simulate how domestic shifts (like electric vehicles or solar panels) impact their long-term footprint.
-
----
-
-## 🎯 Challenge Alignment (PromptWars Challenge 3)
-
-The project is designed to stand out in the PromptWars competition by focusing on:
-1. **Low Friction**: Get an actionable footprint assessment and meet your "Carbon Twin" in under a minute.
-2. **Emotional Engagement**: The **Life Replay** chapter narrative and visceral **Earth Consequences** make the numbers feel immediate and human.
-3. **Interactive Simulation**: The **Habit Sandbox** allows judges and users to toggle lifestyle changes (e.g., eating plant-based, installing solar panels) and watch their twin's Aura react in real-time.
-4. **Resiliency & Fallbacks**: If the Gemini API is unavailable, the application gracefully degrades to local heuristic recommendations and pre-written chapters without crashing.
 
 ---
 
