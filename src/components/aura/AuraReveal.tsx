@@ -28,7 +28,7 @@ export default function AuraReveal() {
   const definition = getAuraDefinition(twin.aura);
 
   return (
-    <div className="fixed inset-0 z-40 bg-bg-primary flex flex-col items-center justify-center overflow-hidden">
+    <div className="w-full min-h-screen bg-bg-primary flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background bleed gradient */}
       <m.div
         initial={{ opacity: 0 }}
@@ -39,6 +39,68 @@ export default function AuraReveal() {
         }}
         className="absolute inset-0 z-0 pointer-events-none"
       />
+
+      {/* Cinematic Full-screen Shockwave Overlay */}
+      <m.div
+        initial={{ scale: 0.01, opacity: 0 }}
+        animate={{ scale: [0.01, 1.2, 2.5], opacity: [0, 0.6, 0] }}
+        transition={{ duration: 1.8, ease: 'easeOut', delay: 0.3 }}
+        className="absolute w-[120vmax] h-[120vmax] rounded-full pointer-events-none z-0"
+        style={{
+          background: `radial-gradient(circle, ${definition.glowColor} 0%, rgba(0, 0, 0, 0) 70%)`
+        }}
+      />
+
+      {/* Sharp Shockwave Wavefront Ring 1 */}
+      <m.div
+        initial={{ scale: 0.01, opacity: 0.8 }}
+        animate={{ scale: 4.5, opacity: 0 }}
+        transition={{ duration: 1.5, ease: 'easeOut', delay: 0.3 }}
+        className="absolute w-[200px] h-[200px] pointer-events-none z-0"
+      >
+        <svg className="w-full h-full" viewBox="0 0 200 200">
+          <defs>
+            <radialGradient id={`glow-grad-1-${definition.name}`} cx="50%" cy="50%" r="50%">
+              <stop offset="90%" stopColor={definition.glowColor} stopOpacity="1" />
+              <stop offset="100%" stopColor={definition.glowColor} stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle 
+            cx="100" 
+            cy="100" 
+            r="96" 
+            fill="none" 
+            stroke={`url(#glow-grad-1-${definition.name})`} 
+            strokeWidth="3" 
+          />
+        </svg>
+      </m.div>
+
+      {/* Sharp Shockwave Wavefront Ring 2 */}
+      <m.div
+        initial={{ scale: 0.01, opacity: 0.5 }}
+        animate={{ scale: 3.5, opacity: 0 }}
+        transition={{ duration: 1.8, ease: 'easeOut', delay: 0.45 }}
+        className="absolute w-[200px] h-[200px] pointer-events-none z-0"
+      >
+        <svg className="w-full h-full" viewBox="0 0 200 200">
+          <defs>
+            <radialGradient id={`glow-grad-2-${definition.name}`} cx="50%" cy="50%" r="50%">
+              <stop offset="85%" stopColor={definition.glowColor} stopOpacity="1" />
+              <stop offset="100%" stopColor={definition.glowColor} stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle 
+            cx="100" 
+            cy="100" 
+            r="94" 
+            fill="none" 
+            stroke={`url(#glow-grad-2-${definition.name})`} 
+            strokeWidth="6" 
+          />
+        </svg>
+      </m.div>
+
 
       <div className="relative z-10 flex flex-col items-center gap-6">
         {/* Scaling core orb */}

@@ -9,43 +9,36 @@ import { ArrowRight, Leaf, Sparkles } from 'lucide-react';
 
 export default function HeroSummaryZone() {
   const twin = useCarbonStore((state) => state.twin);
-  const simulator = useCarbonStore((state) => state.simulator);
+  const simulatedScore = useCarbonStore((state) => state.simulator.simulatedScore);
+  const simulatedAura = useCarbonStore((state) => state.simulator.simulatedAura);
+  const baselineScore = useCarbonStore((state) => state.simulator.baselineScore);
+  const totalReduction = useCarbonStore((state) => state.simulator.totalReduction);
 
   if (!twin) return null;
 
-  const currentScore = simulator.simulatedScore;
-  const currentAura = simulator.simulatedAura;
+  const currentScore = simulatedScore;
+  const currentAura = simulatedAura;
   const auraDef = getAuraDefinition(currentAura);
 
-  const baselineScore = simulator.baselineScore;
-  const totalReduction = simulator.totalReduction;
   const reductionPercentage = baselineScore > 0 
     ? Math.round((totalReduction / baselineScore) * 100) 
     : 0;
 
   return (
-    <div 
-      className="w-full max-w-5xl mx-auto px-4 pt-6"
-      style={{ 
-        contentVisibility: 'auto' 
-      }}
-    >
+    <div className="w-full max-w-5xl mx-auto px-4 pt-6">
       <div 
         style={{ 
-          background: `radial-gradient(circle at 90% 10%, ${getAuraColorWithAlpha(auraDef.glowColor, 0.15)}, transparent), linear-gradient(135deg, rgba(23, 23, 23, 0.4), rgba(10, 10, 10, 0.4))` 
+          background: `radial-gradient(circle at 90% 10%, ${getAuraColorWithAlpha(auraDef.glowColor, 0.15)}, transparent), linear-gradient(135deg, rgba(23, 23, 23, 0.4), rgba(10, 10, 10, 0.4))`,
+          borderColor: getAuraColorWithAlpha(auraDef.glowColor, 0.3),
+          boxShadow: `0 16px 48px -12px ${getAuraColorWithAlpha(auraDef.glowColor, 0.4)}`
         }}
-        className="p-6 md:p-8 rounded-3xl border border-white/10 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
+        className="p-6 md:p-8 rounded-3xl border backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500 overflow-hidden"
       >
         
         {/* Left Section: Aura Orb and Tagline */}
         <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
           <div className="relative shrink-0">
             <AuraOrb aura={currentAura} size="md" />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="text-3xl" aria-hidden="true">
-                {auraDef.emoji}
-              </span>
-            </div>
           </div>
           
           <div className="space-y-2">

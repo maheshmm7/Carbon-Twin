@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import HomeClient from './HomeClient';
+import HomeLanding from './HomeLanding';
 
 export const metadata: Metadata = {
   title: 'Carbon Twin AI™ | Simulate and Purify Your Digital Twin',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <HomeClient />;
+  return <HomeLanding />;
 }

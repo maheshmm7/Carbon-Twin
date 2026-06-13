@@ -1,6 +1,6 @@
 // src/components/twin/BreakdownChart.tsx
 'use client';
-const { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } = require('recharts');
+import { useState, useEffect } from 'react';
 
 interface BreakdownEntry {
   name: string;
@@ -14,6 +14,24 @@ interface BreakdownChartProps {
 }
 
 export default function BreakdownChart({ data }: BreakdownChartProps) {
+  const [recharts, setRecharts] = useState<typeof import('recharts') | null>(null);
+
+  useEffect(() => {
+    import('recharts').then((mod) => {
+      setRecharts(mod);
+    });
+  }, []);
+
+  if (!recharts) {
+    return (
+      <div className="h-[250px] w-full flex items-center justify-center text-zinc-500 bg-zinc-900/10 rounded-xl border border-zinc-800/10">
+        Loading chart...
+      </div>
+    );
+  }
+
+  const { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } = recharts;
+
   return (
     <ResponsiveContainer width="100%" height={250}>
       <BarChart 

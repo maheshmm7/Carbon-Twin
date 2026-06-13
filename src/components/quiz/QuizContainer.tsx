@@ -1,6 +1,7 @@
 // src/components/quiz/QuizContainer.tsx
 'use client';
 import { m, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useCarbonStore } from '@/store/carbon-store';
 import { QUIZ_QUESTIONS, QuizOption } from './questions';
 import ProgressBar from './ProgressBar';
@@ -11,12 +12,12 @@ import QuestionCard from './QuestionCard';
  * Fires twin generation upon completing the 5th question.
  */
 export default function QuizContainer() {
+  const router = useRouter();
   const currentQuestion = useCarbonStore((state) => state.currentQuestion);
   const quizAnswers = useCarbonStore((state) => state.quizAnswers);
   const answerQuestion = useCarbonStore((state) => state.answerQuestion);
   const goToQuestion = useCarbonStore((state) => state.goToQuestion);
   const generateTwin = useCarbonStore((state) => state.generateTwin);
-  const setPhase = useCarbonStore((state) => state.setPhase);
 
   const activeQuestion = QUIZ_QUESTIONS[currentQuestion];
 
@@ -49,7 +50,7 @@ export default function QuizContainer() {
       goToQuestion(currentQuestion - 1);
     } else {
       // Go back to landing page
-      setPhase('landing');
+      router.push('/');
     }
   };
 

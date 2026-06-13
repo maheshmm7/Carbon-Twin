@@ -14,9 +14,9 @@ export default function DemoModeToggle() {
       type="button"
       onClick={activateDemoMode}
       className="text-xs md:text-sm text-text-secondary hover:text-text-primary transition-all underline decoration-dotted underline-offset-4 cursor-pointer outline-none hover:scale-102 focus:ring-2 focus:ring-accent-sapphire px-4 py-2 rounded-lg"
-      aria-label="I am a judge - show results instantly"
+      aria-label="Explore with sample profile"
     >
-      {"I'm a judge — show me instantly ✨"}
+      {"Explore with sample profile ⚡"}
     </button>
   );
 }

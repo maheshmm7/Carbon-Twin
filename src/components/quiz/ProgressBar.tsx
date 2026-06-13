@@ -12,7 +12,13 @@ interface ProgressBarProps {
  */
 export default function ProgressBar({ current, total }: ProgressBarProps) {
   return (
-    <div className="flex flex-col gap-2 items-center w-full" aria-label={`Question progress: question ${current + 1} of ${total}`}>
+    <div className="flex flex-col gap-2 items-center w-full">
+      <progress 
+        className="sr-only" 
+        value={current + 1} 
+        max={total} 
+        aria-label="Quiz progress"
+      />
       <span className="text-xs font-mono text-text-secondary tracking-widest uppercase">
         Question {current + 1} of {total}
       </span>

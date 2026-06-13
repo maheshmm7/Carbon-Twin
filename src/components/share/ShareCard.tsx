@@ -13,6 +13,50 @@ export default function ShareCard() {
 
   const [isExporting, setIsExporting] = useState(false);
 
+  // 3D Tilt State Object
+  const [tilt, setTilt] = useState({
+    rotateX: 0,
+    rotateY: 0,
+    glareX: 0,
+    glareY: 0,
+    showGlare: false
+  });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const midX = rect.width / 2;
+    const midY = rect.height / 2;
+    
+    // Rotate relative to center (max 15 degrees)
+    const rX = -((y - midY) / midY) * 15;
+    const rY = ((x - midX) / midX) * 15;
+    
+    setTilt(prev => ({
+      ...prev,
+      rotateX: rX,
+      rotateY: rY,
+      glareX: (x / rect.width) * 100,
+      glareY: (y / rect.height) * 100
+    }));
+  };
+
+  const handleMouseEnter = () => {
+    setTilt(prev => ({ ...prev, showGlare: true }));
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({
+      rotateX: 0,
+      rotateY: 0,
+      glareX: 0,
+      glareY: 0,
+      showGlare: false
+    });
+  };
+
   if (!twin) return null;
 
   const currentScore = simulatedScore > 0 ? simulatedScore : twin.score;
@@ -128,56 +172,81 @@ export default function ShareCard() {
             Export a high-fidelity digital ID card matching your Aura theme. Show your community your impact and pledge to shift.
           </p>
 
-          {/* HTML Preview card */}
-          <div 
-            style={{ 
-              background: `radial-gradient(circle at 80% 20%, ${getAuraColorWithAlpha(auraDef.glowColor, 0.1)}, transparent), linear-gradient(135deg, #0f0f12, #17171a)` 
-            }}
-            className="w-full aspect-video md:aspect-[3/2] max-w-md mx-auto rounded-2xl border border-white/10 p-6 flex flex-col justify-between text-left shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
-          >
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
-                Carbon Twin AI // ID Card
-              </span>
-              <span className="text-sm">{auraDef.emoji}</span>
-            </div>
+          {/* HTML Preview card with 3D Rotate Interaction */}
+          <div className="perspective-1000 w-full max-w-md mx-auto py-4">
+            <div 
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              style={{ 
+                transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+                transformStyle: 'preserve-3d',
+                background: `radial-gradient(circle at 80% 20%, ${getAuraColorWithAlpha(auraDef.glowColor, 0.15)}, transparent), linear-gradient(135deg, #0b0f19, #171c2a)`,
+                borderColor: getAuraColorWithAlpha(auraDef.glowColor, 0.35),
+                boxShadow: tilt.showGlare 
+                  ? `0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 30px -5px ${getAuraColorWithAlpha(auraDef.glowColor, 0.35)}`
+                  : `0 12px 40px -10px rgba(0, 0, 0, 0.7)`
+              }}
+              className="w-full aspect-video md:aspect-[3/2] rounded-3xl border p-6 flex flex-col justify-between text-left relative overflow-hidden transition-shadow duration-300 select-none cursor-grab active:cursor-grabbing"
+            >
+              {/* Holographic Glare Overlay */}
+              {tilt.showGlare && (
+                <div 
+                  className="absolute inset-0 pointer-events-none mix-blend-color-dodge opacity-25 z-10"
+                  style={{
+                    background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 50%)`
+                  }}
+                />
+              )}
 
-            <div className="space-y-2">
-              <span 
-                className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
-                style={{ 
-                  color: auraDef.glowColor, 
-                  borderColor: getAuraColorWithAlpha(auraDef.glowColor, 0.4),
-                  backgroundColor: getAuraColorWithAlpha(auraDef.glowColor, 0.1)
-                }}
-              >
-                {auraDef.name}
-              </span>
-              <h4 className="text-xl md:text-2xl font-black text-white leading-tight">
-                &ldquo;{auraDef.tagline}&rdquo;
-              </h4>
-            </div>
-
-            <div className="pt-4 border-t border-white/5 flex items-baseline justify-between">
-              <div>
-                <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">
-                  Footprint
-                </p>
-                <div className="flex items-baseline gap-1 mt-0.5">
-                  <span className="text-3xl font-black text-white">
-                    {currentScore.toFixed(1)}
-                  </span>
-                  <span className="text-xs text-neutral-400 font-semibold">tonnes/yr</span>
-                </div>
+              {/* Sub-layers with 3D translation */}
+              <div className="flex justify-between items-start" style={{ transform: 'translateZ(20px)' }}>
+                <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
+                  Carbon Twin AI // Digital ID
+                </span>
+                <span className="text-lg" style={{ transform: 'translateZ(10px)' }}>{auraDef.emoji}</span>
               </div>
-              
-              <div className="text-right">
-                <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">
-                  Rating
-                </p>
-                <p className="text-lg font-bold text-green-400 mt-0.5">
-                  {Math.round(Math.max(5, 100 - (currentScore * 5)))}/100
-                </p>
+
+              <div className="space-y-2" style={{ transform: 'translateZ(30px)' }}>
+                <span 
+                  className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border inline-block"
+                  style={{ 
+                    color: auraDef.glowColor, 
+                    borderColor: getAuraColorWithAlpha(auraDef.glowColor, 0.4),
+                    backgroundColor: getAuraColorWithAlpha(auraDef.glowColor, 0.1)
+                  }}
+                >
+                  {auraDef.name}
+                </span>
+                <h4 className="text-xl md:text-2xl font-black text-white leading-tight font-display">
+                  &ldquo;{auraDef.tagline}&rdquo;
+                </h4>
+              </div>
+
+              <div 
+                className="pt-4 border-t border-white/10 flex items-baseline justify-between"
+                style={{ transform: 'translateZ(25px)' }}
+              >
+                <div>
+                  <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">
+                    Footprint
+                  </p>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-3xl font-black text-white font-mono">
+                      {currentScore.toFixed(1)}
+                    </span>
+                    <span className="text-xs text-neutral-400 font-semibold font-sans">tonnes/yr</span>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">
+                    Twin Rating
+                  </p>
+                  <p className="text-lg font-black text-emerald-400 mt-0.5 font-mono">
+                    {Math.round(Math.max(5, 100 - (currentScore * 5)))}/100
+                  </p>
+                </div>
               </div>
             </div>
           </div>

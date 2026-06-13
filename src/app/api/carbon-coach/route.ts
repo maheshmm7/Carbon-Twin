@@ -1,10 +1,36 @@
-// src/app/api/carbon-coach/route.ts
 import { NextResponse } from 'next/server';
 import { generateCoachResponse } from '@/lib/gemini';
 import { CoachInputSchema } from '@/lib/validators';
+import { getClientIp, isRateLimited } from '@/lib/rate-limit';
+
+const RATE_LIMIT_CONFIG = {
+  limit: 30,
+  windowMs: 60 * 1000 // 1 minute
+};
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const { limited, remaining, reset } = isRateLimited(ip, RATE_LIMIT_CONFIG);
+
+    const headers = {
+      'X-RateLimit-Limit': String(RATE_LIMIT_CONFIG.limit),
+      'X-RateLimit-Remaining': String(remaining),
+      'X-RateLimit-Reset': String(reset)
+    };
+
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait before messaging the coach again.' },
+        { 
+          status: 429, 
+          headers: {
+            ...headers,
+            'Retry-After': String(reset)
+          } 
+        }
+      );
+    }
     const body = await request.json();
 
     // Validate chat request payload
@@ -19,7 +45,7 @@ export async function POST(request: Request) {
       narrative: parsedInput.narrative
     });
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text }, { headers });
   } catch (error) {
     console.error('API Error in /api/carbon-coach:', error);
     const err = error as { message?: string; name?: string };

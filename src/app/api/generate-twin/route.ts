@@ -1,10 +1,36 @@
-// src/app/api/generate-twin/route.ts
 import { NextResponse } from 'next/server';
 import { generateTwinNarrative } from '@/lib/gemini';
 import { GenerateTwinInputSchema } from '@/lib/validators';
+import { getClientIp, isRateLimited } from '@/lib/rate-limit';
+
+const RATE_LIMIT_CONFIG = {
+  limit: 10,
+  windowMs: 60 * 1000 // 1 minute
+};
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const { limited, remaining, reset } = isRateLimited(ip, RATE_LIMIT_CONFIG);
+
+    const headers = {
+      'X-RateLimit-Limit': String(RATE_LIMIT_CONFIG.limit),
+      'X-RateLimit-Remaining': String(remaining),
+      'X-RateLimit-Reset': String(reset)
+    };
+
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait before generating another twin.' },
+        { 
+          status: 429, 
+          headers: {
+            ...headers,
+            'Retry-After': String(reset)
+          } 
+        }
+      );
+    }
     const body = await request.json();
     
     // Validate request payload
@@ -18,7 +44,7 @@ export async function POST(request: Request) {
       answers: parsedInput.answers
     });
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, { headers });
   } catch (error) {
     console.error('API Error in /api/generate-twin:', error);
     

@@ -1,6 +1,6 @@
 // src/store/carbon-store.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { CarbonStore, QuizAnswer, ChatMessage, CarbonTwin, PurificationQuest } from '@/types';
 import { DEMO_TWIN } from '@/lib/demo-data';
 import { 
@@ -34,6 +34,30 @@ const INITIAL_STATE = {
   },
   quests: [] as PurificationQuest[],
   totalCarbonSavedKg: 0
+};
+
+let writeTimeout: NodeJS.Timeout | undefined;
+
+const debouncedLocalStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(name);
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    if (writeTimeout) clearTimeout(writeTimeout);
+    writeTimeout = setTimeout(() => {
+      try {
+        localStorage.setItem(name, value);
+      } catch (err) {
+        console.error('Failed to write to localStorage:', err);
+      }
+    }, 300);
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(name);
+  }
 };
 
 export const useCarbonStore = create<CarbonStore>()(
@@ -133,7 +157,7 @@ export const useCarbonStore = create<CarbonStore>()(
       const aiResponse = await response.json();
 
       const calculatedTwin: CarbonTwin = {
-        id: `twin-${Math.random().toString(36).substr(2, 9)}`,
+        id: `twin-${Math.random().toString(36).substring(2, 11)}`,
         score,
         aura,
         impactLevel: score <= 2.3 ? 'low' : score <= 4.7 ? 'moderate' : score <= 14.0 ? 'high' : 'critical',
@@ -188,7 +212,7 @@ export const useCarbonStore = create<CarbonStore>()(
       }));
 
       const fallbackTwin: CarbonTwin = {
-        id: `twin-fallback-${Math.random().toString(36).substr(2, 9)}`,
+        id: `twin-fallback-${Math.random().toString(36).substring(2, 11)}`,
         score,
         aura,
         impactLevel: score <= 2.3 ? 'low' : score <= 4.7 ? 'moderate' : score <= 14.0 ? 'high' : 'critical',
@@ -537,7 +561,8 @@ export const useCarbonStore = create<CarbonStore>()(
   }
     }),
     {
-      name: 'carbon-store-v2'
+      name: 'carbon-store-v2',
+      storage: createJSONStorage(() => debouncedLocalStorage)
     }
   )
 );

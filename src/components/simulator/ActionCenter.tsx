@@ -19,7 +19,7 @@ interface Particle {
 export default function ActionCenter() {
   const twin = useCarbonStore((state) => state.twin);
   const quizAnswers = useCarbonStore((state) => state.quizAnswers);
-  const simulator = useCarbonStore((state) => state.simulator);
+  const activeShifts = useCarbonStore((state) => state.simulator.activeShifts);
   const toggleShift = useCarbonStore((state) => state.toggleShift);
   const resetSimulator = useCarbonStore((state) => state.resetSimulator);
 
@@ -67,12 +67,7 @@ export default function ActionCenter() {
   };
 
   return (
-    <div 
-      className="p-6 rounded-3xl bg-neutral-900/40 border border-white/5 backdrop-blur-xl space-y-6"
-      style={{ 
-        contentVisibility: 'auto' 
-      }}
-    >
+    <div className="p-6 rounded-3xl bg-neutral-900/40 border border-white/5 backdrop-blur-xl space-y-6 overflow-hidden">
       {/* Particle Overlay */}
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
         {particles.map((p) => (
@@ -135,7 +130,7 @@ export default function ActionCenter() {
         </div>
 
         {/* Global Reset Buttons per tab */}
-        {activeTab === 'shifts' && simulator.activeShifts.length > 0 && (
+        {activeTab === 'shifts' && activeShifts.length > 0 && (
           <button
             type="button"
             onClick={resetSimulator}
@@ -172,9 +167,9 @@ export default function ActionCenter() {
                 <p className="text-[11px] text-neutral-400 mt-0.5">Toggle potential changes to optimize your twin score.</p>
               </div>
 
-              <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-2.5">
                 {availableShifts.map((shift) => {
-                  const isEnabled = simulator.activeShifts.includes(shift.id);
+                  const isEnabled = activeShifts.includes(shift.id);
                   return (
                     <button
                       type="button"

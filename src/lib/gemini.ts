@@ -26,15 +26,14 @@ export async function generateTwinNarrative(params: {
 
   const model = genAI.getGenerativeModel({
     model: MODEL_NAME,
+    systemInstruction: TWIN_GENERATION_SYSTEM_INSTRUCTION,
     generationConfig: {
       responseMimeType: 'application/json'
     }
   });
 
   const prompt = `
-${TWIN_GENERATION_SYSTEM_INSTRUCTION}
-
-INPUTS (do NOT modify):
+INPUTS:
 - Annual CO2e score: ${params.score} tonnes/year
 - Assigned Aura: ${params.aura}
 - Category breakdown: ${JSON.stringify(params.breakdown)}
@@ -73,27 +72,34 @@ export async function generateCoachResponse(params: {
     throw new Error('GEMINI_API_KEY is not defined in environment variables.');
   }
 
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-
-  const historyPrompt = params.history
-    .map(msg => `${msg.sender === 'user' ? 'User' : 'Coach'}: ${msg.text}`)
-    .join('\n');
-
-  const systemInstruction = `
+  const systemInstructionText = `
 ${COACH_SYSTEM_INSTRUCTION}
 
 User context:
 - Assigned Carbon Aura: ${params.aura || 'sapphire'}
 - Score: ${params.score || '7.2'} tonnes/year
 - Life Replay Story: "${params.narrative || 'A moderate environmental trace.'}"
+`;
 
-CONVERSATION HISTORY:
-${historyPrompt}
-User: ${params.message}
-Coach:`;
+  const model = genAI.getGenerativeModel({
+    model: MODEL_NAME,
+    systemInstruction: systemInstructionText
+  });
+
+  // Convert conversation history to Gemini content parts
+  const contents = params.history.map(msg => ({
+    role: msg.sender === 'user' ? 'user' : 'model',
+    parts: [{ text: msg.text }]
+  }));
+
+  // Append current user message
+  contents.push({
+    role: 'user',
+    parts: [{ text: params.message }]
+  });
 
   try {
-    const result = await model.generateContent(systemInstruction);
+    const result = await model.generateContent({ contents });
     const textResponse = result.response.text();
     return textResponse || "I'm here to help you reduce your carbon footprint. What area of your lifestyle would you like to discuss?";
   } catch (error) {

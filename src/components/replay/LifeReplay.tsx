@@ -1,6 +1,5 @@
 // src/components/replay/LifeReplay.tsx
 'use client';
-import { useEffect } from 'react';
 import { m } from 'framer-motion';
 import { useCarbonStore } from '@/store/carbon-store';
 import { getAuraDefinition } from '@/lib/aura-definitions';
@@ -14,16 +13,6 @@ import AuraOrb from '../aura/AuraOrb';
 export default function LifeReplay() {
   const twin = useCarbonStore((state) => state.twin);
   const advanceToResults = useCarbonStore((state) => state.advanceToResults);
-
-  useEffect(() => {
-    // Auto-advance to next phase after 4 seconds
-    const timer = setTimeout(() => {
-      advanceToResults();
-    }, 4000);
-
-    return () => clearTimeout(timer);
-  }, [advanceToResults]);
-
   const { displayedText } = useTypewriter(
     twin?.lifeReplay.narrative || '',
     18 // Speed up slightly to finish under 1.2 seconds
@@ -34,14 +23,14 @@ export default function LifeReplay() {
   const definition = getAuraDefinition(twin.aura);
 
   return (
-    <div className="fixed inset-0 z-40 bg-bg-primary flex flex-col items-center justify-center overflow-hidden px-4 md:px-8 py-12">
+    <div className="w-full min-h-screen bg-bg-primary px-4 md:px-8 pt-8 pb-32 flex flex-col items-center">
       {/* Background glow */}
       <div 
         style={{ background: `radial-gradient(circle at 10% 10%, ${definition.glowColor} 0%, transparent 60%)` }}
         className="absolute inset-0 pointer-events-none opacity-20"
       />
 
-      <div className="max-w-4xl w-full flex flex-col gap-8 items-center z-10">
+      <div className="max-w-4xl w-full flex flex-col gap-6 md:gap-8 items-center z-10 my-auto">
         
         {/* Shrunk Aura Indicator at Top */}
         <m.div 
@@ -60,8 +49,13 @@ export default function LifeReplay() {
         </m.div>
 
         {/* Narrative Box */}
-        <div className="min-h-[90px] md:min-h-[72px] text-center max-w-2xl px-4">
-          <p className="text-lg md:text-xl font-body text-text-primary leading-relaxed antialiased">
+        <div className="min-h-[72px] md:min-h-[60px] text-center max-w-2xl px-4">
+          {/* Static full text for screen readers, announced immediately */}
+          <p className="sr-only">
+            {twin.lifeReplay.narrative}
+          </p>
+          {/* Animating text hidden from screen readers to prevent speech disruption */}
+          <p className="text-base md:text-lg font-body text-text-primary leading-relaxed antialiased" aria-hidden="true">
             {displayedText}
           </p>
         </div>
@@ -130,7 +124,7 @@ export default function LifeReplay() {
           onClick={advanceToResults}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 3.4, duration: 0.3 }}
+          transition={{ delay: 3.0, duration: 0.3 }}
           className="px-6 py-2.5 rounded-lg bg-white text-bg-primary hover:bg-white/90 active:scale-95 font-semibold text-sm transition-all cursor-pointer outline-none shadow-md"
         >
           See Your Full Impact →
