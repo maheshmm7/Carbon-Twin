@@ -113,9 +113,9 @@ export default function MiniSandbox() {
       <div className="flex-1 space-y-6 text-left">
         <div>
           <span className="text-[10px] text-emerald-400 uppercase tracking-widest font-bold">Interactive Sandbox Preview</span>
-          <h3 className="text-2xl font-extrabold text-white tracking-tight mt-1 font-display">
+          <h2 className="text-2xl font-extrabold text-white tracking-tight mt-1 font-display">
             Simulate Daily Habits
-          </h3>
+          </h2>
           <p className="text-xs text-text-secondary mt-1">
             Toggle your choices to watch your Carbon Twin&apos;s aura morph in real-time.
           </p>

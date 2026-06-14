@@ -1,7 +1,7 @@
 // src/store/carbon-store.ts
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { CarbonStore, QuizAnswer, ChatMessage, CarbonTwin, PurificationQuest } from '@/types';
+import { CarbonStore, QuizAnswer, ChatMessage, CarbonTwin, PurificationQuest, CarbonBreakdown } from '@/types';
 import { DEMO_TWIN } from '@/lib/demo-data';
 import { 
   calculateScore, 
@@ -14,6 +14,54 @@ import {
 } from '@/lib/carbon-engine';
 import { getAvailableShifts } from '@/lib/simulator-options';
 import { getAvailableQuests } from '@/lib/quest-options';
+
+/**
+ * Calculates all baseline twin metrics derived directly from quiz answers.
+ */
+function calculateTwinBaseline(answers: QuizAnswer[]) {
+  const score = calculateScore(answers);
+  const aura = assignAura(score);
+  const breakdown = calculateBreakdown(answers);
+  const projections = calculateProjections(score);
+  const consequences = calculateConsequences(score);
+  const greenFuture = calculateGreenFuture(score, breakdown, answers);
+
+  return { score, aura, breakdown, projections, consequences, greenFuture };
+}
+
+/**
+ * Calculates all simulator metrics based on active habit shifts and quest offsets.
+ */
+function calculateSimulatorMetrics(
+  breakdown: CarbonBreakdown,
+  activeShifts: string[],
+  quizAnswers: QuizAnswer[],
+  baselineScore: number,
+  carbonSavedTonnes: number = 0
+) {
+  const availableShifts = getAvailableShifts(quizAnswers, breakdown);
+  const enabledShiftsList = availableShifts.map((shift) => ({
+    ...shift,
+    enabled: activeShifts.includes(shift.id)
+  }));
+
+  const { score: rawSimulatedScore } = calculateWithShifts(
+    breakdown,
+    enabledShiftsList
+  );
+
+  const simulatedScore = Math.max(0.1, Math.round((rawSimulatedScore - carbonSavedTonnes) * 1000) / 1000);
+  const simulatedAura = assignAura(simulatedScore);
+  const totalReduction = Math.round((baselineScore - simulatedScore) * 10) / 10;
+
+  return {
+    activeShifts,
+    simulatedScore,
+    simulatedAura,
+    baselineScore,
+    totalReduction
+  };
+}
 
 const INITIAL_STATE = {
   phase: 'landing' as const,
@@ -126,12 +174,8 @@ export const useCarbonStore = create<CarbonStore>()(
 
     try {
       // 1. Calculate deterministic baseline values locally
-      const score = calculateScore(quizAnswers);
-      const aura = assignAura(score);
-      const breakdown = calculateBreakdown(quizAnswers);
-      const projections = calculateProjections(score);
-      const consequences = calculateConsequences(score);
-      const greenFuture = calculateGreenFuture(score, breakdown, quizAnswers);
+      const baseline = calculateTwinBaseline(quizAnswers);
+      const { score, aura, breakdown, projections, consequences, greenFuture } = baseline;
 
       // 2. Initialize simulator state using the baseline
       const initialSimulator = {
@@ -192,12 +236,8 @@ export const useCarbonStore = create<CarbonStore>()(
       console.error('Failed to generate Carbon Twin via AI, using fallback:', err);
       
       // Fallback implementation in case of API failures (judges review resilience)
-      const score = calculateScore(quizAnswers);
-      const aura = assignAura(score);
-      const breakdown = calculateBreakdown(quizAnswers);
-      const projections = calculateProjections(score);
-      const consequences = calculateConsequences(score);
-      const greenFuture = calculateGreenFuture(score, breakdown, quizAnswers);
+      const baseline = calculateTwinBaseline(quizAnswers);
+      const { score, aura, breakdown, projections, consequences, greenFuture } = baseline;
 
       // Pre-written recommendations based on answers
       const allShifts = getAvailableShifts(quizAnswers, breakdown);
@@ -336,28 +376,18 @@ export const useCarbonStore = create<CarbonStore>()(
         ? state.simulator.activeShifts.filter((id) => id !== shiftId)
         : [...state.simulator.activeShifts, shiftId];
 
-      // Retrieve all available shifts based on original baseline
-      const availableShifts = getAvailableShifts(state.quizAnswers, state.twin.breakdown);
-      const enabledShiftsList = availableShifts.map((shift) => ({
-        ...shift,
-        enabled: activeShifts.includes(shift.id)
-      }));
-
-      // Calculate new score and Aura deterministically
-      const { score, aura } = calculateWithShifts(
+      const simulator = calculateSimulatorMetrics(
         state.twin.breakdown,
-        enabledShiftsList
+        activeShifts,
+        state.quizAnswers,
+        state.simulator.baselineScore,
+        0
       );
-
-      const totalReduction = Math.round((state.simulator.baselineScore - score) * 10) / 10;
 
       return {
         simulator: {
           ...state.simulator,
-          activeShifts,
-          simulatedScore: score,
-          simulatedAura: aura,
-          totalReduction
+          ...simulator
         }
       };
     });
@@ -411,20 +441,13 @@ export const useCarbonStore = create<CarbonStore>()(
       };
 
       // Recalculate simulator based on updatedTwin breakdown
-      const availableShifts = getAvailableShifts(state.quizAnswers, updatedTwin.breakdown);
-      const enabledShiftsList = availableShifts.map((shift) => ({
-        ...shift,
-        enabled: state.simulator.activeShifts.includes(shift.id)
-      }));
-
-      const { score: rawSimulatedScore } = calculateWithShifts(
+      const simulator = calculateSimulatorMetrics(
         updatedTwin.breakdown,
-        enabledShiftsList
+        state.simulator.activeShifts,
+        state.quizAnswers,
+        newScore,
+        carbonSavedTonnes
       );
-
-      const simulatedScore = Math.max(0.1, Math.round((rawSimulatedScore - carbonSavedTonnes) * 1000) / 1000);
-      const simulatedAura = assignAura(simulatedScore);
-      const totalReduction = Math.round((newScore - simulatedScore) * 10) / 10;
 
       return {
         quests: updatedQuests,
@@ -432,11 +455,7 @@ export const useCarbonStore = create<CarbonStore>()(
         twin: updatedTwin,
         simulator: {
           ...state.simulator,
-          baselineScore: newScore,
-          baselineAura: newAura,
-          simulatedScore,
-          simulatedAura,
-          totalReduction
+          ...simulator
         }
       };
     });
@@ -460,18 +479,13 @@ export const useCarbonStore = create<CarbonStore>()(
         consequences: newConsequences
       };
 
-      const availableShifts = getAvailableShifts(state.quizAnswers, updatedTwin.breakdown);
-      const enabledShiftsList = availableShifts.map((shift) => ({
-        ...shift,
-        enabled: state.simulator.activeShifts.includes(shift.id)
-      }));
-
-      const { score: simulatedScore, aura: simulatedAura } = calculateWithShifts(
+      const simulator = calculateSimulatorMetrics(
         updatedTwin.breakdown,
-        enabledShiftsList
+        state.simulator.activeShifts,
+        state.quizAnswers,
+        originalScore,
+        0
       );
-
-      const totalReduction = Math.round((originalScore - simulatedScore) * 10) / 10;
 
       return {
         quests: updatedQuests,
@@ -479,11 +493,7 @@ export const useCarbonStore = create<CarbonStore>()(
         twin: updatedTwin,
         simulator: {
           ...state.simulator,
-          baselineScore: originalScore,
-          baselineAura: newAura,
-          simulatedScore,
-          simulatedAura,
-          totalReduction
+          ...simulator
         }
       };
     });
@@ -499,12 +509,8 @@ export const useCarbonStore = create<CarbonStore>()(
       );
 
       // 2. Recalculate baseline values locally
-      const score = calculateScore(updatedAnswers);
-      const aura = assignAura(score);
-      const breakdown = calculateBreakdown(updatedAnswers);
-      const projections = calculateProjections(score);
-      const consequences = calculateConsequences(score);
-      const greenFuture = calculateGreenFuture(score, breakdown, updatedAnswers);
+      const baseline = calculateTwinBaseline(updatedAnswers);
+      const { score, aura, breakdown, projections, consequences, greenFuture } = baseline;
 
       // 3. Recalculate quests (re-evaluate available quests based on updated answers)
       const quests = getAvailableQuests(updatedAnswers);
@@ -513,18 +519,13 @@ export const useCarbonStore = create<CarbonStore>()(
       const totalCarbonSavedKg = 0;
 
       // 5. Recalculate simulator with the active shifts
-      const availableShifts = getAvailableShifts(updatedAnswers, breakdown);
-      const enabledShiftsList = availableShifts.map((shift) => ({
-        ...shift,
-        enabled: state.simulator.activeShifts.includes(shift.id)
-      }));
-
-      const { score: simulatedScore, aura: simulatedAura } = calculateWithShifts(
+      const simulator = calculateSimulatorMetrics(
         breakdown,
-        enabledShiftsList
+        state.simulator.activeShifts,
+        updatedAnswers,
+        score,
+        0
       );
-
-      const totalReduction = Math.round((score - simulatedScore) * 10) / 10;
 
       const updatedTwin = {
         ...state.twin,
@@ -550,11 +551,7 @@ export const useCarbonStore = create<CarbonStore>()(
         twin: updatedTwin,
         simulator: {
           ...state.simulator,
-          baselineScore: score,
-          baselineAura: aura,
-          simulatedScore,
-          simulatedAura,
-          totalReduction
+          ...simulator
         }
       };
     });

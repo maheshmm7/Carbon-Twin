@@ -74,3 +74,23 @@ export const CONSEQUENCE_CONSTANTS = {
   flightEmissionTonnes: 1.0,
   kwhPerTonneCo2: 2500
 } as const;
+
+/**
+ * Sea-level rise contribution (in mm) per tonne of CO2e.
+ */
+export const SEA_LEVEL_COEFFICIENT = 0.00015;
+
+/**
+ * Baseline parameters and offsets for health score calculation.
+ */
+export const HEALTH_SCORE_CONSTANTS = {
+  baseScore: 60,
+  minScore: 10,
+  maxScore: 95,
+  bikeWalkBonus: 20,
+  carPetrolPenalty: 10,
+  veganVegetarianBonus: 15,
+  meatLoverPenalty: 10,
+  improvedBonus: 15,
+  improvedBikeWalkBonus: 10
+} as const;

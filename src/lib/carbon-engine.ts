@@ -8,7 +8,7 @@ import {
   EarthConsequence, 
   GreenFutureComparison 
 } from '@/types';
-import { EMISSION_FACTORS, AURA_THRESHOLDS, CONSEQUENCE_CONSTANTS } from './constants';
+import { EMISSION_FACTORS, AURA_THRESHOLDS, CONSEQUENCE_CONSTANTS, SEA_LEVEL_COEFFICIENT, HEALTH_SCORE_CONSTANTS } from './constants';
 
 /**
  * Financial proxy estimates (annual cost in USD) based on lifestyle habits.
@@ -56,10 +56,10 @@ const FINANCIAL_ESTIMATES = {
 export function calculateBreakdown(answers: QuizAnswer[]): CarbonBreakdown {
   const findVal = (cat: keyof CarbonBreakdown, def: string): number => {
     const ans = answers.find(a => a.category === cat);
-    const factors = (EMISSION_FACTORS as unknown as Record<string, Record<string, number>>)[cat];
-    if (!ans) return factors[def];
-    const key = ans.value as string;
-    return factors[key] ?? factors[def];
+    const factors = EMISSION_FACTORS[cat];
+    if (!ans) return factors[def as keyof typeof factors];
+    const key = ans.value as keyof typeof factors;
+    return factors[key] ?? factors[def as keyof typeof factors];
   };
 
   return {
@@ -133,7 +133,7 @@ export function calculateProjections(score: number): TimelineProjection[] {
       cumulativeTonnes,
       treesRequired: Math.round(cumulativeTonnes / CONSEQUENCE_CONSTANTS.treeAbsorbtionPerYearTonnes),
       equivalentFlights: Math.round(cumulativeTonnes / CONSEQUENCE_CONSTANTS.flightEmissionTonnes),
-      seaLevelContribution_mm: Math.round((cumulativeTonnes * 0.00015) * 10000) / 10000
+      seaLevelContribution_mm: Math.round((cumulativeTonnes * SEA_LEVEL_COEFFICIENT) * 10000) / 10000
     };
   });
 }
@@ -168,7 +168,13 @@ export function calculateGreenFuture(
   };
 
   const getCost = (cat: string, val: string): number => {
-    return (FINANCIAL_ESTIMATES as unknown as Record<string, Record<string, number>>)[cat]?.[val] ?? 1000;
+    if (cat in FINANCIAL_ESTIMATES) {
+      const categoryEstimates = FINANCIAL_ESTIMATES[cat as keyof typeof FINANCIAL_ESTIMATES];
+      if (val in categoryEstimates) {
+        return categoryEstimates[val as keyof typeof categoryEstimates];
+      }
+    }
+    return 1000;
   };
 
   const transVal = getVal('transport');
@@ -188,12 +194,12 @@ export function calculateGreenFuture(
   const currentCo2_5yr = Math.round(baselineScore * 5 * 10) / 10;
   const currentCost_5yr = currentAnnualCost * 5;
 
-  let currentHealth = 60;
-  if (transVal === 'bike_walk') currentHealth += 20;
-  if (transVal === 'car_petrol') currentHealth -= 10;
-  if (dietVal === 'vegan' || dietVal === 'vegetarian') currentHealth += 15;
-  if (dietVal === 'meat_lover') currentHealth -= 10;
-  currentHealth = Math.min(100, Math.max(10, currentHealth));
+  let currentHealth: number = HEALTH_SCORE_CONSTANTS.baseScore;
+  if (transVal === 'bike_walk') currentHealth += HEALTH_SCORE_CONSTANTS.bikeWalkBonus;
+  if (transVal === 'car_petrol') currentHealth -= HEALTH_SCORE_CONSTANTS.carPetrolPenalty;
+  if (dietVal === 'vegan' || dietVal === 'vegetarian') currentHealth += HEALTH_SCORE_CONSTANTS.veganVegetarianBonus;
+  if (dietVal === 'meat_lover') currentHealth -= HEALTH_SCORE_CONSTANTS.meatLoverPenalty;
+  currentHealth = Math.min(100, Math.max(HEALTH_SCORE_CONSTANTS.minScore, currentHealth));
 
   // 2. Improved Future Calculations (Optimistic shifts)
   const improvedTrans = transVal === 'car_petrol' ? 'car_electric' : transVal;
@@ -221,9 +227,9 @@ export function calculateGreenFuture(
   const improvedCo2_5yr = Math.round(improvedScore * 5 * 10) / 10;
   const improvedCost_5yr = improvedAnnualCost * 5;
 
-  let improvedHealth = currentHealth + 15;
-  if (improvedTrans === 'bike_walk') improvedHealth += 10;
-  improvedHealth = Math.min(95, improvedHealth);
+  let improvedHealth = currentHealth + HEALTH_SCORE_CONSTANTS.improvedBonus;
+  if (improvedTrans === 'bike_walk') improvedHealth += HEALTH_SCORE_CONSTANTS.improvedBikeWalkBonus;
+  improvedHealth = Math.min(HEALTH_SCORE_CONSTANTS.maxScore, improvedHealth);
 
   const reductionPercentage = Math.round(((currentCo2_5yr - improvedCo2_5yr) / Math.max(0.1, currentCo2_5yr)) * 100);
   const moneySaved = currentCost_5yr - improvedCost_5yr;

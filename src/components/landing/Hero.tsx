@@ -45,7 +45,7 @@ export default function Hero() {
           <m.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.2 }}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-emerald-400 mb-2"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -56,7 +56,7 @@ export default function Hero() {
           <m.h1
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
             className="text-4xl md:text-7xl font-display font-black tracking-tight text-white leading-none"
           >
             Simulate Your{' '}
@@ -69,7 +69,7 @@ export default function Hero() {
           <m.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.25, delay: 0.05, ease: 'easeOut' }}
             className="text-base md:text-lg text-text-secondary max-w-xl leading-relaxed"
           >
             Discover your environmental identity, simulate habit shifts in a real-time sandbox, and optimize your path to a greener future.
