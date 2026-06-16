@@ -94,3 +94,9 @@ export const HEALTH_SCORE_CONSTANTS = {
   improvedBonus: 15,
   improvedBikeWalkBonus: 10
 } as const;
+
+export const COACH_MESSAGES = {
+  FALLBACK_ERROR: "I'm having trouble connecting to my servers right now. Try focusing on reducing travel or power usage, which are high-impact areas!",
+  WELCOME_COACH: (aura: string) => `Hello! I'm your Carbon Coach. Your ${aura.toUpperCase()} Aura shows where you stand today. Let's work together to shift it! What habit should we tackle first?`,
+  WELCOME_DEMO: `Welcome! I'm your AI Carbon Coach. As a Sapphire Aura, you're at a key transition point. Ask me anything about how to reduce your footprint!`
+} as const;

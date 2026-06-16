@@ -202,11 +202,17 @@ export function calculateGreenFuture(
   currentHealth = Math.min(100, Math.max(HEALTH_SCORE_CONSTANTS.minScore, currentHealth));
 
   // 2. Improved Future Calculations (Optimistic shifts)
-  const improvedTrans = transVal === 'car_petrol' ? 'car_electric' : transVal;
-  const improvedDiet = ['meat_lover', 'meat_regular'].includes(dietVal) ? 'flexitarian' : dietVal;
-  const improvedEnergy = ['grid_gas', 'oil_wood'].includes(energyVal) ? 'solar_mix' : energyVal;
-  const improvedTravel = travelVal === 'flights_6_plus' ? 'flights_3_5' : (travelVal === 'flights_3_5' ? 'flights_1_2' : travelVal);
-  const improvedCons = ['luxury', 'frequent'].includes(consVal) ? 'average' : consVal;
+  const transShiftMap: Record<string, string> = { car_petrol: 'car_electric' };
+  const dietShiftMap: Record<string, string> = { meat_lover: 'flexitarian', meat_regular: 'flexitarian' };
+  const energyShiftMap: Record<string, string> = { grid_gas: 'solar_mix', oil_wood: 'solar_mix' };
+  const travelShiftMap: Record<string, string> = { flights_6_plus: 'flights_3_5', flights_3_5: 'flights_1_2' };
+  const consShiftMap: Record<string, string> = { luxury: 'average', frequent: 'average' };
+
+  const improvedTrans = transShiftMap[transVal] ?? transVal;
+  const improvedDiet = dietShiftMap[dietVal] ?? dietVal;
+  const improvedEnergy = energyShiftMap[energyVal] ?? energyVal;
+  const improvedTravel = travelShiftMap[travelVal] ?? travelVal;
+  const improvedCons = consShiftMap[consVal] ?? consVal;
 
   const improvedAnnualCost = 
     getCost('transport', improvedTrans) +

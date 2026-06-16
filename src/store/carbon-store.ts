@@ -14,6 +14,7 @@ import {
 } from '@/lib/carbon-engine';
 import { getAvailableShifts } from '@/lib/simulator-options';
 import { getAvailableQuests } from '@/lib/quest-options';
+import { COACH_MESSAGES } from '@/lib/constants';
 
 /**
  * Calculates all baseline twin metrics derived directly from quiz answers.
@@ -84,29 +85,33 @@ const INITIAL_STATE = {
   totalCarbonSavedKg: 0
 };
 
-let writeTimeout: NodeJS.Timeout | undefined;
+const createDebouncedStorage = () => {
+  let writeTimeout: NodeJS.Timeout | undefined;
 
-const debouncedLocalStorage = {
-  getItem: (name: string): string | null => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(name);
-  },
-  setItem: (name: string, value: string): void => {
-    if (typeof window === 'undefined') return;
-    if (writeTimeout) clearTimeout(writeTimeout);
-    writeTimeout = setTimeout(() => {
-      try {
-        localStorage.setItem(name, value);
-      } catch (err) {
-        console.error('Failed to write to localStorage:', err);
-      }
-    }, 300);
-  },
-  removeItem: (name: string): void => {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(name);
-  }
+  return {
+    getItem: (name: string): string | null => {
+      if (typeof window === 'undefined') return null;
+      return localStorage.getItem(name);
+    },
+    setItem: (name: string, value: string): void => {
+      if (typeof window === 'undefined') return;
+      if (writeTimeout) clearTimeout(writeTimeout);
+      writeTimeout = setTimeout(() => {
+        try {
+          localStorage.setItem(name, value);
+        } catch (err) {
+          console.error('Failed to write to localStorage:', err);
+        }
+      }, 300);
+    },
+    removeItem: (name: string): void => {
+      if (typeof window === 'undefined') return;
+      localStorage.removeItem(name);
+    }
+  };
 };
+
+const debouncedLocalStorage = createDebouncedStorage();
 
 export const useCarbonStore = create<CarbonStore>()(
   persist(
@@ -135,7 +140,7 @@ export const useCarbonStore = create<CarbonStore>()(
         {
           id: 'welcome-demo',
           sender: 'coach',
-          text: `Welcome! I'm your AI Carbon Coach. As a Sapphire Aura, you're at a key transition point. Ask me anything about how to reduce your footprint!`,
+          text: COACH_MESSAGES.WELCOME_DEMO,
           timestamp: new Date().toISOString()
         }
       ],
@@ -227,7 +232,7 @@ export const useCarbonStore = create<CarbonStore>()(
           {
             id: 'welcome-coach',
             sender: 'coach',
-            text: `Hello! I'm your Carbon Coach. Your ${calculatedTwin.aura.toUpperCase()} Aura shows where you stand today. Let's work together to shift it! What habit should we tackle first?`,
+            text: COACH_MESSAGES.WELCOME_COACH(calculatedTwin.aura),
             timestamp: new Date().toISOString()
           }
         ]
@@ -293,7 +298,7 @@ export const useCarbonStore = create<CarbonStore>()(
           {
             id: 'welcome-coach-fallback',
             sender: 'coach',
-            text: `Hello! I'm your Carbon Coach. Your ${fallbackTwin.aura.toUpperCase()} Aura shows where you stand today. Let's work together to shift it! What habit should we tackle first?`,
+            text: COACH_MESSAGES.WELCOME_COACH(fallbackTwin.aura),
             timestamp: new Date().toISOString()
           }
         ]
@@ -354,7 +359,7 @@ export const useCarbonStore = create<CarbonStore>()(
       const errorMsg: ChatMessage = {
         id: `msg-${Date.now()}-error`,
         sender: 'coach',
-        text: "I'm having trouble connecting to my servers right now. Try focusing on reducing travel or power usage, which are high-impact areas!",
+        text: COACH_MESSAGES.FALLBACK_ERROR,
         timestamp: new Date().toISOString()
       };
       set((state) => ({
