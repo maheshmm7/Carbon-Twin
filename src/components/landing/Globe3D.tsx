@@ -6,8 +6,13 @@ interface Globe3DProps {
   color: string; // HSL/RGB particle color matching the Aura
   shadowColor: string; // Aura shadow/glow color
   size?: number; // Canvas size dimension
-  showOcean?: boolean; // Kept for compatibility, not used in WebGL texture version
 }
+
+const EARTH_TILT_RADIAN = 22 * Math.PI / 180;
+const ROTATION_SPEED_Y = 0.006;
+const SPHERE_RADIUS = 1.0;
+const LATITUDE_BANDS = 64;
+const LONGITUDE_BANDS = 64;
 
 // GLSL Vertex Shader Source
 const VS_SOURCE = `
@@ -195,9 +200,9 @@ export default function Globe3D({ color, shadowColor, size = 200 }: Globe3DProps
     const uAuraColorLoc = gl.getUniformLocation(program, 'uAuraColor');
 
     // 2. Generate Sphere Mesh Geometry
-    const latitudeBands = 64;
-    const longitudeBands = 64;
-    const radius = 1.0;
+    const latitudeBands = LATITUDE_BANDS;
+    const longitudeBands = LONGITUDE_BANDS;
+    const radius = SPHERE_RADIUS;
 
     const vertexPositionData: number[] = [];
     const textureCoordData: number[] = [];
@@ -282,7 +287,7 @@ export default function Globe3D({ color, shadowColor, size = 200 }: Globe3DProps
 
     // 4. Matrix Math and Rotation loop
     let angleY = 0;
-    const rotSpeedY = 0.006;
+    const rotSpeedY = ROTATION_SPEED_Y;
     let animationFrameId: number;
 
     const rgbColor = parseColorToRGB(color);
@@ -299,7 +304,7 @@ export default function Globe3D({ color, shadowColor, size = 200 }: Globe3DProps
       // Model-View Matrix with Rotate Y and tilt on X
       const cosY = Math.cos(angleY);
       const sinY = Math.sin(angleY);
-      const tiltX = 22 * Math.PI / 180; // Constant Earth axis tilt
+      const tiltX = EARTH_TILT_RADIAN; // Constant Earth axis tilt
       const cosX = Math.cos(tiltX);
       const sinX = Math.sin(tiltX);
 

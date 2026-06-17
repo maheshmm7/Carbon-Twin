@@ -1,4 +1,4 @@
-export const createDebouncedStorage = () => {
+const createDebouncedStorage = () => {
   let writeTimeout: NodeJS.Timeout | undefined;
 
   return {

@@ -23,7 +23,7 @@ export function createFallbackTwin(
   }));
 
   return {
-    id: `twin-fallback-${Math.random().toString(36).substring(2, 11)}`,
+    id: `twin-fallback-${crypto.randomUUID()}`,
     score,
     aura,
     impactLevel: score <= 2.3 ? 'low' : score <= 4.7 ? 'moderate' : score <= 14.0 ? 'high' : 'critical',
