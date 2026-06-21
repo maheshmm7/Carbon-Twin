@@ -9,6 +9,7 @@ import { COACH_MESSAGES } from '@/lib/constants';
 import { generateTwinApi } from '@/services/twin-service';
 import { sendCoachMessageApi } from '@/services/coach-service';
 import { debouncedLocalStorage } from '@/lib/persistence';
+import { logger } from '@/lib/logger';
 import { createFallbackTwin, createFallbackCoachMessage } from '@/lib/fallback-data';
 import { calculateTwinBaseline, calculateSimulatorMetrics } from '@/lib/twin-derivation';
 
@@ -116,7 +117,7 @@ export const useCarbonStore = create<CarbonStore>()(
           const aiResponse = await generateTwinApi(score, aura, breakdown, quizAnswers);
 
           const calculatedTwin: CarbonTwin = {
-            id: `twin-${Math.random().toString(36).substring(2, 11)}`,
+            id: `twin-${crypto.randomUUID()}`,
             score,
             aura,
             impactLevel: score <= 2.3 ? 'low' : score <= 4.7 ? 'moderate' : score <= 14.0 ? 'high' : 'critical',
@@ -148,7 +149,7 @@ export const useCarbonStore = create<CarbonStore>()(
             ]
           });
         } catch (err) {
-          console.error('Failed to generate Carbon Twin via AI, using fallback:', err);
+          logger.error('Failed to generate Carbon Twin via AI, using fallback:', err);
           
           // Fallback implementation
           const baseline = calculateTwinBaseline(quizAnswers);
@@ -229,7 +230,7 @@ export const useCarbonStore = create<CarbonStore>()(
             coachMessages: [...state.coachMessages, coachMsg]
           }));
         } catch (err) {
-          console.error('Failed to get coach response:', err);
+          logger.error('Failed to get coach response:', err);
           set((state) => ({
             coachMessages: [...state.coachMessages, createFallbackCoachMessage()]
           }));

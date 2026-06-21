@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateCoachResponse } from '@/lib/gemini';
 import { CoachInputSchema } from '@/lib/validators';
 import { getClientIp, isRateLimited } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 const RATE_LIMIT_CONFIG = {
   limit: 30,
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ text }, { headers });
   } catch (error) {
-    console.error('API Error in /api/carbon-coach:', error);
+    logger.error('API Error in /api/carbon-coach:', error);
     const err = error as { message?: string; name?: string };
     return NextResponse.json(
       { error: err?.message || 'Failed to generate coach response' },

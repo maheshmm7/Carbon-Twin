@@ -150,8 +150,8 @@ export default function ShareCard() {
       link.download = `carbon-twin-${currentAura}.png`;
       link.href = dataUrl;
       link.click();
-    } catch (err) {
-      console.error('Failed to export image:', err);
+    } catch {
+      // Error exporting image silently swallowed
     } finally {
       setIsExporting(false);
     }

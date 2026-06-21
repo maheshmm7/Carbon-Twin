@@ -96,8 +96,8 @@ export default function AICoach() {
 
     try {
       await sendCoachMessage(text);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Component-level error swallowed; store handles fallbacks
     } finally {
       setIsSending(false);
     }
@@ -108,8 +108,8 @@ export default function AICoach() {
     setIsSending(true);
     try {
       await sendCoachMessage(presetText);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Component-level error swallowed; store handles fallbacks
     } finally {
       setIsSending(false);
     }

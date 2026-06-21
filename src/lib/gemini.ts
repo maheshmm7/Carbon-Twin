@@ -2,6 +2,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { GeminiTwinOutputSchema } from './validators';
 import { TWIN_GENERATION_SYSTEM_INSTRUCTION, COACH_SYSTEM_INSTRUCTION } from './prompts';
+import { logger } from './logger';
 
 // Initialize Gemini API client
 const apiKey = process.env.GEMINI_API_KEY || '';
@@ -53,7 +54,7 @@ INPUTS:
     const validatedData = GeminiTwinOutputSchema.parse(jsonParsed);
     return validatedData;
   } catch (error) {
-    console.error('Error in generateTwinNarrative:', error);
+    logger.error('Error in generateTwinNarrative:', error);
     throw error;
   }
 }
@@ -103,7 +104,7 @@ User context:
     const textResponse = result.response.text();
     return textResponse || "I'm here to help you reduce your carbon footprint. What area of your lifestyle would you like to discuss?";
   } catch (error) {
-    console.error('Error in generateCoachResponse:', error);
+    logger.error('Error in generateCoachResponse:', error);
     throw error;
   }
 }

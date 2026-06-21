@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateTwinNarrative } from '@/lib/gemini';
 import { GenerateTwinInputSchema } from '@/lib/validators';
 import { getClientIp, isRateLimited } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 const RATE_LIMIT_CONFIG = {
   limit: 10,
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { headers });
   } catch (error) {
-    console.error('API Error in /api/generate-twin:', error);
+    logger.error('API Error in /api/generate-twin:', error);
     
     const err = error as { message?: string; name?: string };
     // Return structured error response

@@ -12,8 +12,8 @@ const createDebouncedStorage = () => {
       writeTimeout = setTimeout(() => {
         try {
           localStorage.setItem(name, value);
-        } catch (err) {
-          console.error('Failed to write to localStorage:', err);
+        } catch {
+          // LocalStorage failure silently swallowed
         }
       }, 300);
     },

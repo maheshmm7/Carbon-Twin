@@ -1,6 +1,7 @@
 // src/components/landing/Globe3D.tsx
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { logger } from '@/lib/logger';
 
 interface Globe3DProps {
   color: string; // HSL/RGB particle color matching the Aura
@@ -167,7 +168,7 @@ export default function Globe3D({ color, shadowColor, size = 200 }: Globe3DProps
       gl.shaderSource(shader, source);
       gl.compileShader(shader);
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+        logger.error('Shader compilation error:', gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
       }
@@ -185,7 +186,7 @@ export default function Globe3D({ color, shadowColor, size = 200 }: Globe3DProps
     gl.linkProgram(program);
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('Program linking failed:', gl.getProgramInfoLog(program));
+      logger.error('Program linking failed:', gl.getProgramInfoLog(program));
       return;
     }
 
@@ -280,8 +281,8 @@ export default function Globe3D({ color, shadowColor, size = 200 }: Globe3DProps
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
       setTextureLoaded(true);
     };
-    image.onerror = (e) => {
-      console.error('Failed to load Earth texture map image asset:', e);
+    image.onerror = () => {
+      // Graceful fallback; texture load failure is silent
     };
     image.src = '/assets/earth-texture.png';
 
